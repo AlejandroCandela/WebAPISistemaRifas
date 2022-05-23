@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPISistemaRifas", "WebAPISistemaRifas\WebAPISistemaRifas.csproj", "{2232C91E-C405-4696-8D83-9C6FCD569950}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2232C91E-C405-4696-8D83-9C6FCD569950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2232C91E-C405-4696-8D83-9C6FCD569950}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2232C91E-C405-4696-8D83-9C6FCD569950}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2232C91E-C405-4696-8D83-9C6FCD569950}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E9D65201-2A16-4BD4-BBD2-EF3AAD52FFAC}
+	EndGlobalSection
+EndGlobal
