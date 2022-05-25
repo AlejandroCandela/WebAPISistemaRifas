@@ -11,6 +11,7 @@ namespace WebAPISistemaRifas.DTOs
 {
     [ApiController]
     [Route("API/Rifas")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrador")]
     public class RifaController : ControllerBase
     {
         private readonly ApplicationDBContext dBContext;

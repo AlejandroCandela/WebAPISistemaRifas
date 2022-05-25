@@ -51,11 +51,11 @@ namespace WebAPISistemaRifas.Controllers
                 return BadRequest(result.Errors);
             }
         }
-
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credencialesUsuario) 
         {
-            var result = await signInManager.PasswordSignInAsync(credencialesUsuario.email,
+            var result = await signInManager.PasswordSignInAsync(credencialesUsuario.Nombres,
                 credencialesUsuario.contraseña, isPersistent: false, lockoutOnFailure: false);
 
             if (result.Succeeded)
@@ -72,7 +72,7 @@ namespace WebAPISistemaRifas.Controllers
         public async Task<ActionResult> HacerAdmin(EditarCoordinadores editar) 
         {
             var usuario = await userManager.FindByNameAsync(editar.Nombres );
-            await userManager.AddClaimAsync(usuario, new Claim("Administrador", "1"));
+            await userManager.AddClaimAsync(usuario, new Claim("AdminClaim", "1"));
             return NoContent();
         }
 
@@ -80,21 +80,21 @@ namespace WebAPISistemaRifas.Controllers
         public async Task<ActionResult> QuitarAdmin(EditarCoordinadores editar)
         {
             var usuario = await userManager.FindByNameAsync(editar.Nombres );
-            await userManager.RemoveClaimAsync(usuario, new Claim("Administrador","1"));
+            await userManager.RemoveClaimAsync(usuario, new Claim("AdminClaim", "1"));
             return NoContent();
         }
 
         [HttpGet("RenovarToken")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<RespuestaAutenticacion>> Renovar()
         {
             var nombreclaim = HttpContext.User.Claims.Where(claim => claim.Type == "Nombre").FirstOrDefault();
-            var emailclaim = HttpContext.User.Claims.Where(claim => claim.Type == "Email" && claim.Type == "Email").FirstOrDefault();
+            //var emailclaim = HttpContext.User.Claims.Where(claim =>  claim.Type == "Email").FirstOrDefault();
+            System.Console.WriteLine($"<{nombreclaim}>");
             var nombre = nombreclaim.Value;
-            var email = emailclaim.Value;
+            //var email = emailclaim.Value;
             var credenciales = new CredencialesUsuario()
             {
-                email = email,
+                //email = email,
                 Nombres = nombreclaim.Value,
             };
 
@@ -108,11 +108,14 @@ namespace WebAPISistemaRifas.Controllers
                 new Claim("Nombre", credencialesUsuario.Nombres),
                 new Claim("Email", credencialesUsuario.email)
             };
+            var usuario = await userManager.FindByNameAsync(credencialesUsuario.Nombres);
+            var claimsDB = await userManager.GetClaimsAsync(usuario);
 
+            claims.AddRange(claimsDB);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["keyjwt"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var FechaExpiracion = DateTime.UtcNow.AddMinutes(60);
+            var FechaExpiracion = DateTime.UtcNow.AddHours(2);
             var token = new JwtSecurityToken(issuer: null,audience: null, claims: claims,
                 expires: FechaExpiracion, signingCredentials: creds);
             return new RespuestaAutenticacion() 

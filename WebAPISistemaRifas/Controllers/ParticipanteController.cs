@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPISistemaRifas.Entidades;
@@ -7,6 +9,7 @@ namespace WebAPISistemaRifas.DTOs
 {
     [ApiController]
     [Route("SistemaDeInscripciones/")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrador")]
     public class ParticipanteController : ControllerBase
     {
         private readonly ApplicationDBContext dBContext;
@@ -88,7 +91,7 @@ namespace WebAPISistemaRifas.DTOs
             var elementoCartas = await dBContext.Cartas.AnyAsync(x => x.id == idCarta);
             if (!elementoCartas)
             {
-                return NotFound("No el id de la carta indicada");
+                return NotFound("No el id de la carta no es indicado");
             }
 
             try{
@@ -97,7 +100,8 @@ namespace WebAPISistemaRifas.DTOs
             }
             catch (Exception ex) {
                 var cantidadDePraticipantes = await dBContext.ParticipantesCartasRifa.Where(x => x.IdRifa == idRifa.ToString()).ToListAsync();
-                if (!(cantidadDePraticipantes.Count() < 54)) 
+               
+                if (!(cantidadDePraticipantes.Count()<=54)) 
                 {
                     return BadRequest("La rifa ya esta llena");
                 }
@@ -111,9 +115,12 @@ namespace WebAPISistemaRifas.DTOs
                 var rifa = await dBContext.Rifas.FirstAsync(x => x.id == idRifa);
                 var participante = await dBContext.Participantes.FirstAsync(x => x.Id == idParticipante);
                 var nuevoElemento = new ParticipantesCartasRifa() {
-                                                                IdCartas = idCarta.ToString(), 
-                                                                IdParticipantes = idParticipante.ToString(),
-                                                                IdRifa = idRifa.ToString(),
+                                                                IdCartas = carta.id.ToString(),
+                                                                IdParticipantes = participante.Id.ToString(),
+                                                                IdRifa = rifa.id.ToString(),
+                                                                Cartas = carta,  
+                                                                Participantes = participante,
+                                                                Rifa = rifa,
                                                               };
                 dBContext.Add(nuevoElemento);
                 var nuevaVista = mapper.Map<ParticipantesCartasRifaDTO>(nuevoElemento);

@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using WebAPISistemaRifas.Filtros;
 using WebAPISistemaRifas.Services;
+using WebAPISistemaRifas.Servicios;
 
 namespace WebAPISistemaRifas
 {
@@ -33,22 +34,23 @@ namespace WebAPISistemaRifas
             services.AddDbContext<ApplicationDBContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
             services.AddHostedService<ComunicacionConGanadores>();
+            services.AddTransient<IService, ServicioSelecciones>();
             services.AddResponseCaching();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(/*opciones => opciones.TokenValidationParameters = new TokenValidationParameters
+                .AddJwtBearer(opciones => opciones.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = false,
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["keyjwt"])),
                     ClockSkew = TimeSpan.Zero
-                }*/);
+                });
             services.AddEndpointsApiExplorer();
             
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIAlumnos", Version = "v1" });/*
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIAlumnos", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme 
                 {
                     Name = "Authorization",
@@ -70,25 +72,24 @@ namespace WebAPISistemaRifas
                         },
                         new String []{ }
                     }
-                });*/
+                });
             });
             services.AddAutoMapper(typeof(Startup));
-            /*services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();*/
-            services.AddAuthorization(/*opciones => 
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();
+            services.AddAuthorization(opciones => 
             {
                 opciones.AddPolicy("Administrador", policy => policy.RequireClaim("AdminClaim"));
-                opciones.AddPolicy("ClienteRegitrado", policy => policy.RequireClaim("RegistroClaim"));
-            }*/);
-            /*
+                //opciones.AddPolicy("ClienteRegitrado", policy => policy.RequireClaim("RegistroClaim"));
+            });
+            
             services.AddCors(opciones => 
             {
-                opciones.AddDefaultPolicy(builder => 
-                {
-                    builder.WithOrigins("https://apirequest.io").AllowAnyMethod().AllowAnyHeader();
+                opciones.AddDefaultPolicy(builder =>
+                { 
                     builder.WithOrigins("https://google.com").AllowAnyMethod().AllowAnyHeader();
                 });
-            });*/
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPISistemaRifas.DTOs;
@@ -7,6 +9,7 @@ namespace WebAPISistemaRifas.Controllers
 {
     [ApiController]
     [Route("RegistroPremiosDeRifa/")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrador")]
     public class PremiosController : ControllerBase
     {
         private readonly ApplicationDBContext dBContext;
